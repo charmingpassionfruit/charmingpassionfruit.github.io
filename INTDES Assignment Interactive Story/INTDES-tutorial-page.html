@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI Tutorial</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('Bakground.gif'); /* Replace with your GIF path */
+            background-size: cover; /* Ensures the GIF covers the entire background */
+            background-position: center; /* Centers the GIF */
+            color: #eaeaea;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            cursor: url('Images/orb_cursor.png') 10 10, auto;
+            text-align: center; /* Aligns all text to the center */
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        header {
+            background: #0f3460;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        header h1 {
+            margin: 0;
+            color: #e94560;
+        }
+        .container {
+            width: 800px; /* Matched to the quiz page */
+            text-align: center; /* Aligns text inside the container */
+            padding: 20px;
+            background: #16213e;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            line-height: 1.8;
+        }
+        section {
+            display: none;
+        }
+        section.active {
+            display: block;
+        }
+        .section-header {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #e94560;
+            font-weight: bold; /* Makes headers bold */
+        }
+        .section-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #1f2a48;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center; /* Aligns text inside the sections */
+        }
+        .section-container h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ffa500;
+        }
+        .section-content {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .section-container img {
+            max-width: 210px; /* Decreased the size of the images */
+            height: auto;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .summary-line {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #ffa500;
+        }
+        .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .next-button, .back-button, .quiz-button {
+            padding: 12px 24px;
+            background-color: #556b8d;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: url('Images/orb_cursor.png') 10 10, auto; /* Custom cursor */
+            transition: background-color 0.3s ease;
+        }
+        .next-button:hover, .back-button:hover {
+            background-color: #717d93;
+        }
+        .quiz-button:hover {
+            background-color: #4caf50; /* Changes hover color to green */
+        }
+        .back-button {
+            display: none; /* Initially hidden */
+        }
+        footer {
+            margin-top: 20px;
+            color: #888;
+        }
+        #audio-controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #audio-controls input[type="range"] {
+            width: 300px;
+            
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            let currentSection = 0;
+            const sections = $("section");
+
+            function showSection(index) {
+                sections.removeClass("active");
+                $(sections[index]).addClass("active");
+
+                // Handle navigation button visibility
+                if (index === 0) {
+                    $(".back-button").hide();
+                } else {
+                    $(".back-button").show();
+                }
+
+                if (index === sections.length - 1) {
+                    $(".next-button").hide();
+                    $(".quiz-button").show();
+                } else {
+                    $(".next-button").show();
+                    $(".quiz-button").hide();
+                }
+            }
+
+            $(".next-button").on("click", function () {
+                if (currentSection < sections.length - 1) {
+                    currentSection++;
+                    showSection(currentSection);
+                }
+            });
+
+            $(".back-button").on("click", function () {
+                if (currentSection > 0) {
+                    currentSection--;
+                    showSection(currentSection);
+                }
+            });
+
+            // Show the first section initially
+            showSection(currentSection);
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Generative AI Tutorial</h1>
+    </header>
+    <div class="container">
+        <section id="capabilities">
+            <div class="section-header"> About Generative AI (Gen AI)</div>
+            <div class="section-container">
+                <h3>What is Gen AI</h3>
+                <p class="section-content">Artificial Intelligence (AI) is the science of teaching machines to mimic human intelligence by learning and adapting through computer programming<br>Generative AI is a specialized type of AI focused on creating new content such as text, images, and music, rather than just analyzing or processing existing information..</p>
+            </div>
+            <div class="section-container">
+                <h3>Gen AI VS Search Engines</h3>
+                <p class="section-content">Search engines like Google or Yahoo locate and list existing web pages based on keywords. Generative AI, however, provides composed answers and allows ongoing interaction, building on previous exchanges to refine responses. This makes it more like chatting with an intelligent assistant capable of generating original and customised outputs.</p>
+            </div>
+            <div class="section-container">
+                <h3>Popular Gen AI Models</h3>
+                <div class="section-container">
+                    <img src="Images/GPT.png" alt="GPT">
+                    <img src="Images/Gemini.png" alt="Gemini">
+                    <img src="Images/DALL-E.png" alt="DALL-E">
+                </div>
+            </div>
+            <p class="summary-line">Generative AI is a type of AI that creates original content, like text and images, through interactive, adaptive exchanges, unlike search engines that retrieve existing data.</p>
+        </section>
+        <section id="usage">
+            <div class="section-header">Capabilities of Generative AI</div>
+            <div class="section-container">
+                <h3>Gen AI can be used for</h3>
+                <p class="section-content">1. Text Generation: Write stories, articles, poetry, or create summaries. Example: Use ChatGPT to draft an essay or a social media post.<br>2. Image Generation: Create unique visuals from scratch. Example: Use tools like DALL-E to design custom artwork or illustrations.<br>3. Daily Tasks: Getting gooogle Gemini to come up with a diet plan</p>
+            </div>
+            <div class="section-container">
+                <h3>Using Gen AI effectively</h3>
+                <p class="section-content">1. Use Natural Language: Write as if chatting with a friend. Example: "Can you summarize this article for me?"<br>2. Be Specific and Iterative: Clearly explain what you need. Example: "Write a 100-word email about rescheduling a meeting." If the response isn't right, refine your prompt.<br>3. Be Concise and Clear: Stick to simple, focused instructions. Example: "Generate a list of creative birthday party themes."</p>
+            </div>
+            <div class="section-container">
+                <h3>Limitations of Gen AI</h3>
+                <p class="section-content">While Gen AI is able to excute various creative tasks, it cannot do anything physical. Gen AI is also dependent on data quality. Poor-quality data or insufficient training will result in poor outputs</p>
+            </div>
+            <p class="summary-line">Generative AI excels in creating text, images, and assisting with tasks by using clear, natural, and specific instructions for effective and versatile outputs..</p>
+        </section>
+        <section id="flaws">
+            <div class="section-header">3. Risks and downsides of Gen AI</div>
+            <div class="section-container">
+                <h3>Inaccuracy and Misinformation</h3>
+                <p class="section-content">1. Generative AI can sometimes make mistakes or create false information, a phenomenon called "hallucination."<br>2. It may produce misleading content, like fake news, images, or videos (e.g., deepfakes).<br>3. Always verify AI-generated content using trusted sources</p>
+            </div>
+            <div class="section-container">
+                <h3>Privacy Concerns</h3>
+                <p class="section-content">Using Generative AI can risk your personal or organizational data privacy. Avoid sharing any private, sensitive or confidential information in your prompts. </p>
+            </div>
+            <div class="section-container">
+                <h3>Copyright Issues</h3>
+                <p class="section-content">Determining ownership of AI-generated content is challenging as the technology evolves.Generative AI might unintentionally create content that resembles or copies others' work, potentially causing legal issues.</p>
+            </div>
+            <p class="summary-line">Generative AI poses risks like inaccuracy, privacy concerns, and copyright issues, requiring some degree of caution</p>
+        </section>
+        <div class="navigation-buttons">
+            <button class="back-button">Back</button>
+            <button class="next-button">Next</button>
+            <button class="quiz-button" style="display: none;" onclick="window.location.href='INTDES-start-quiz-page.html';">Quiz</button>
+        </div>
+        <div id="audio-controls">
+            <label for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Escape Dr. Byte's Lab</p>
+    </footer>
+
+    <audio id="background-music" loop>
+        <source src="BGMN.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const backgroundMusic = document.getElementById("background-music");
+        const volumeControl = document.getElementById("volume");
+
+        backgroundMusic.volume = 0.5; // Set initial volume
+        backgroundMusic.play(); // Start playing background music
+
+        volumeControl.addEventListener("input", (e) => {
+            backgroundMusic.volume = e.target.value;
+        });
+
+    </script>
+</body>
+</html>

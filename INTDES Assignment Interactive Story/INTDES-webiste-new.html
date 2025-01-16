@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Dr. Byte's Lab</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-image: url('Bakground.gif'); /* Replace with your GIF path */
+            background-size: cover; /* Ensures the GIF covers the entire background */
+            background-position: center; /* Centers the GIF */
+            color: #eaeaea;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: url('Images/orb_cursor.png') 10 10, auto; /* Custom cursor */
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        header {
+            background: #0f3460;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        header h1 {
+            margin: 0;
+            color: #e94560;
+        }
+        .container {
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+            background: #16213e;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        #progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        #progress {
+            width: 0;
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.3s;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #eaeaea;
+        }
+        .header-text {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e94560;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .options li {
+            margin: 0;
+        }
+        .options button, .start-button {
+            padding: 10px 20px;
+            background-color: #556b8d;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: url('Images/orb_cursor.png') 10 10, auto;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .options button.correct {
+            background-color: #4caf50 !important;
+        }
+        .options button.incorrect {
+            background-color: #f44336 !important;
+        }
+        .options button:hover, .start-button:hover {
+            background-color: #717d93;
+        }
+        #score {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #ffa500;
+        }
+        footer {
+            margin-top: 20px;
+            color: #888;
+        }
+        .hidden {
+            display: none;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background-image: url('Images/DR\ BYTE.jpg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .start-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #ffa500;
+        }
+        #audio-controls {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #audio-controls input[type="range"] {
+            width: 300px;
+            
+        }
+        .return-button {
+            padding: 12px 24px;
+            background-color: #556b8d;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: url('Images/orb_cursor.png') 10 10, auto; /* Custom cursor */
+            transition: background-color 0.3s ease;
+        }
+        .return-button:hover {
+            background-color: #4caf50; /* Changes hover color to green */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Escape Dr. Byte's Lab</h1>
+    </header>
+    <div class="container" id="game-container">
+        <div class="header-text" id="story-header">
+            Oh no! You wake up in a mysterious facility. Dr. Byte has challenged you to outsmart his AI systems. Can you escape?
+        </div>
+        <div id="progress-bar">
+            <div id="progress"></div>
+        </div>
+        <div class="image-placeholder" id="story-image"></div>
+        <div id="score">Score: 0</div> <!-- Added score display -->
+        <div id="story-text" class="question">
+            <p>Are you ready to begin the challenge?</p>
+        </div>
+        <div class="start-button-container" id="start-button-container">
+            <button class="start-button" onclick="playButtonSound(); startGame()">Start the Challenge</button>
+        </div>
+        <div id="options-container" class="options"></div>
+        <div id="feedback" class="feedback hidden"></div>
+        <div id="audio-controls">
+            <label for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Escape Dr. Byte's Lab</p>
+    </footer>
+
+    <audio id="background-music" loop>
+        <source src="BGMN.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <audio id="button-sound">
+        <source src="Bloop.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+        
+
+    <script>
+        const questions = [
+            {
+                text: "Question 1. What does \"generative\" mean in Generative AI?",
+                options: [
+                    "To create or generate new content",
+                    "To analyse data and provide insights",
+                    "To predict future trends",
+                    "To delete old data"
+                ],
+                correct: 0,
+                feedback: [
+                    "Yes, that’s right! Generative AI creates new content, like images, text, or music!",
+                    "Not quite. Generative AI focuses on creating new content."
+                ],
+                image: "Images/Q1.png"
+            },
+            {
+               text: "Question 2. What is an example of Generative AI in action?",
+               options: [
+                   "A chatbot providing customer service",
+                   "A machine learning model detecting spam emails",
+                   "AI generating a painting from a text prompt",
+                   "A search engine finding results"
+               ],
+               correct: 2,
+               feedback: [
+                   "Exactly! Generating paintings from text is a hallmark of generative AI.",
+                   "Close, but Generative AI excels at creating outputs like paintings from text prompts."
+               ],
+               image: "Images/Q2.png"
+            },
+           {
+               text: "Question 3. How does Generative create new content",
+               options: [
+                   "By copying and pasting existing information",
+                   "By analyzing patterns in data it was trained on",
+                   "By asking humans to write content",
+                   "By randomly guessing outputs"
+               ],
+               correct: 1,
+               feedback: [
+                   "That's right! Generative AI learns patterns in the data it's trained on to create unique outputs.",
+                   "Not quite,Generative AI doesn't copy or guess, it can analyzes data to generate new, original content."
+               ],
+               image: "Images/Q3.png"
+           },
+           {
+               text: "Question 4. What is a potential downside of Generative AI",
+               options: [
+                   "It can work 24/7",
+                   "It might create fake or misleading information",
+                   "It can never make mistakes",
+                   "It only works with human supervison"
+               ],
+               correct: 1,
+               feedback: [
+                   "Nice! Generative AI can sometimes generate false information if it's based on flawed or biased training data.",
+                   "Good attempt.. The downside of Generative AI is that it may create misleading information, even if it may seem accurate."
+               ],
+               image: "Images/Q4.png"
+           },
+           {
+               text: "Question 5. Which of these tasks is NOT something Generative AI can currently do",
+               options: [
+                   "Writing stories",
+                   "Designing game characters",
+                   "Cooking food in a restaurant",
+                   "Composing music"
+               ],
+               correct: 2,
+               feedback: [
+                   "Well done! While Generative AI can design and create virtual content, it can't perform physical tasks like cooking.",
+                   "Close, but Not quite, Generative AI can't cook, it's limited to virtual creations like text, images or music."
+               ],
+               image: "Images/Q5.png"
+           },
+           {
+               text: "Question 6. What is an ethical concern when using Generative AI",
+               options: [
+                   "It doesn't work in cold weather",
+                   "It takes too long to process data",
+                   "It is only available to scientist",
+                   "It may be used to spread misinformation or create fake content"
+               ],
+               correct: 3,
+               feedback: [
+                   "That's correct, A major ethical concern is the potential misuse of Generative AI to create fake or harmful content",
+                   "Not really, The biggest ethical conern is that Generative AI can sometimes create and spead misleading or fake information."
+               ],
+               image: "Images/Q6.png"
+           },
+           {
+               text: "Question 7. True or False: Generative AI can only be used for creative tasks like art and music. ",
+               options: [
+                   "True",
+                   "False",
+  
+               ],
+               correct: 1,
+               feedback: [
+                   "Great job! generative AI is also used for practical tasks like creating code or helping out with medical research",
+                   "Not quite. Generative AI isn't just for creativity, it has many practical applications too! (like creating code or medical research)"
+               ],
+               image: "Images/Q7.png"
+           },
+           {
+               text: "Question 8. WHat should you do when you notice information that looks wrong/uncredible in Generative AI output?",
+               options: [
+                   "Assume it is correct since AI made it",
+                   "Double-check the information with trusted sources",
+                   "Share it immediately without checking",
+                   "Delete the AI software"
+               ],
+               correct: 1,
+               feedback: [
+                   "Great job! Always verfify AI-generated content with reliable sources to ensure it is accurate",
+                   "Nice try.. It is important to double check AI-generated information with trusted sources to avoid spreading false information"
+               ],
+               image: "Images/Q8.png"
+           },
+       ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function playButtonSound() {
+            const buttonSound = document.getElementById("button-sound");
+            buttonSound.currentTime = 0; // Reset sound
+            buttonSound.play();
+        }
+
+        function startGame() {
+            const startButtonContainer = document.getElementById("start-button-container");
+            startButtonContainer.style.display = "none";
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const storyText = document.getElementById("story-text");
+            const storyImage = document.getElementById("story-image");
+            const optionsContainer = document.getElementById("options-container") || document.createElement("ul");
+            optionsContainer.id = "options-container";
+            optionsContainer.className = "options";
+
+            const container = document.getElementById("game-container");
+            if (!document.getElementById("options-container")) {
+                container.appendChild(optionsContainer);
+            }
+
+            const question = questions[currentQuestion];
+            storyText.innerHTML = `<p>${question.text}</p>`;
+            storyImage.style.backgroundImage = `url('${question.image}')`;
+
+            optionsContainer.innerHTML = "";
+            question.options.forEach((option, index) => {
+                optionsContainer.innerHTML += `<li><button onclick=\"checkAnswer(${index})\">${option}</button></li>`;
+            });
+            if (!document.getElementById("feedback")) {
+                const feedback = document.createElement("div");
+                feedback.id = "feedback";
+                feedback.className = "feedback hidden";
+                container.appendChild(feedback);
+            }
+            updateProgressBar(); // Update the progress bar
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestion];
+            const options = document.querySelectorAll(".options button");
+            const feedback = document.getElementById("feedback");
+
+            feedback.classList.remove("hidden");
+            if (selectedIndex === question.correct) {
+                options[selectedIndex].classList.add("correct");
+                feedback.innerHTML = question.feedback[0];
+                score++;
+                updateScore(); // Update the score display
+            } else {
+                options[selectedIndex].classList.add("incorrect");
+                feedback.innerHTML = question.feedback[1];
+            }
+
+            // Disable all options
+            options.forEach(option => {
+                option.disabled = true;
+            });
+
+            setTimeout(() => {
+                feedback.classList.add("hidden");
+                nextQuestion();
+            }, 3000);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById("progress").style.width = `${progress}%`;
+        }
+
+        function updateScore() { // New function to update score display
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        function endGame() {
+            const container = document.getElementById("game-container");
+            const storyText = document.getElementById("story-text");
+            const optionsContainer = document.getElementById("options-container");
+            const storyImage = document.getElementById("story-image");
+
+            if (optionsContainer) optionsContainer.remove();
+
+            if (score >= 7) {
+                storyText.innerHTML = `<p>Great job! Your quick wits and knowledge of generative A.I has allowed you to outsmart Dr. Byte and escape his lab. Freedom is yours!</p>`;
+                storyImage.style.backgroundImage = "url('Images/Victory.png')";
+            } else if (score >= 4) {
+                storyText.innerHTML = `<p>A Narrow escape! Dr. Byte grumbles as you barely slip past his final defenses. You got away this time, but some revision will do you good.</p>`;
+                storyImage.style.backgroundImage = "url('Images/BARELY.png')";
+            } else {
+                storyText.innerHTML = `<p>Uh-oh… Dr. Byte has outsmarted you! The lab door slams shut. But don’t worry, you’ll have another chance to escape someday.</p>`;
+                storyImage.style.backgroundImage = "url('Images/Failed.png')";
+            }
+
+            // Add return button
+            const returnButton = document.createElement('button');
+            returnButton.className = 'return-button';
+            returnButton.textContent = 'Return to Start Page';
+            returnButton.onclick = () => {
+                window.location.href = 'INTDES-start-quiz-page.html';
+            };
+            container.appendChild(returnButton);
+        }
+         // Background music logic
+         const backgroundMusic = document.getElementById("background-music");
+        const volumeControl = document.getElementById("volume");
+
+        backgroundMusic.volume = 0.5; // Set initial volume
+        backgroundMusic.play(); // Start playing background music
+
+        volumeControl.addEventListener("input", (e) => {
+            backgroundMusic.volume = e.target.value;
+        });
+
+    </script>
+</body>
+</html>
+
